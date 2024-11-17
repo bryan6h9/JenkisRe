@@ -1,1 +1,34 @@
+name: Docker Bench Security on Local Host
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker-bench-security:
+    runs-on: ubuntu-latest  # Necesitas usar GitHub Actions runner
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker environment
+        run: |
+          echo "Setting up Docker host environment"
+          export DOCKER_HOST=tcp://<192.168.56.1>:2375
+          echo "Docker host set to $DOCKER_HOST"
+
+      - name: Pull Docker Bench Security image
+        run: |
+          docker pull docker/docker-bench-security:latest
+
+      - name: Run Docker Bench Security
+        run: |
+          docker run --net host --pid host \
+            -v /var/lib:/var/lib \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v /etc:/etc \
+            -v /usr/bin:/usr/bin \
+            -v /usr/lib:/usr/lib \
+            docker/docker-bench-security:latest
 
